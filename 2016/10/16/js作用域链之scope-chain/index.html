@@ -1,0 +1,631 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="javascript," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="理解JavaScript的作用域链
+原文地址：田小计划
+上一篇文章中介绍了Execution Context中的三个重要部分：VO/AO，scope chain和this，并详细的介绍了VO/AO在JavaScript代码执行中的表现。
+本文就看看Execution Context中的scope chain。
+作用域
+开始介绍作用域链之前，先看看JavaScript中的作用域（scope）。在很多">
+<meta property="og:type" content="article">
+<meta property="og:title" content="js作用域链之scope chain">
+<meta property="og:url" content="https://cheukdarsy.github.io/2016/10/16/js作用域链之scope-chain/index.html">
+<meta property="og:site_name" content="Das'Blog">
+<meta property="og:description" content="理解JavaScript的作用域链
+原文地址：田小计划
+上一篇文章中介绍了Execution Context中的三个重要部分：VO/AO，scope chain和this，并详细的介绍了VO/AO在JavaScript代码执行中的表现。
+本文就看看Execution Context中的scope chain。
+作用域
+开始介绍作用域链之前，先看看JavaScript中的作用域（scope）。在很多">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202341552-94941711.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202343192-1736899039.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202345224-1059314508.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202347208-254025968.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202349224-1554337822.png">
+<meta property="og:image" content="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202351395-1888858218.png">
+<meta property="og:updated_time" content="2016-10-16T15:04:25.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="js作用域链之scope chain">
+<meta name="twitter:description" content="理解JavaScript的作用域链
+原文地址：田小计划
+上一篇文章中介绍了Execution Context中的三个重要部分：VO/AO，scope chain和this，并详细的介绍了VO/AO在JavaScript代码执行中的表现。
+本文就看看Execution Context中的scope chain。
+作用域
+开始介绍作用域链之前，先看看JavaScript中的作用域（scope）。在很多">
+<meta name="twitter:image" content="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202341552-94941711.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: 'Author'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="https://cheukdarsy.github.io/2016/10/16/js作用域链之scope-chain/"/>
+
+  <title> js作用域链之scope chain | Das'Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Das'Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">前途满希望 _</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                js作用域链之scope chain
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-10-16T23:02:56+08:00" content="2016-10-16">
+              2016-10-16
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>理解JavaScript的作用域链</p>
+<p>原文地址：<a href="http://www.cnblogs.com/wilber2013/p/4909459.html" target="_blank" rel="external">田小计划</a></p>
+<p>上一篇文章中介绍了Execution Context中的三个重要部分：VO/AO，scope chain和this，并详细的介绍了VO/AO在JavaScript代码执行中的表现。</p>
+<p>本文就看看Execution Context中的scope chain。</p>
+<p>作用域</p>
+<p>开始介绍作用域链之前，先看看JavaScript中的作用域（scope）。在很多语言中（C++，C#，Java），作用域都是通过代码块（由{}包起来的代码）来决定的，但是，在JavaScript作用域是跟函数相关的，也可以说成是function-based。</p>
+<p>例如，当for循环这个代码块结束后，依然可以访问变量”i”。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">for(var i = 0; i &lt; 3; i++)&#123;</div><div class="line">    console.log(i);</div><div class="line">&#125;</div><div class="line"></div><div class="line">console.log(i); //3</div></pre></td></tr></table></figure>
+<p>对于作用域，又可以分为全局作用域（Global scope）和局部作用域（Local scpoe）。</p>
+<p>全局作用域中的对象可以在代码的任何地方访问，一般来说，下面情况的对象会在全局作用域中：</p>
+<p>最外层函数和在最外层函数外面定义的变量<br>没有通过关键字”var”声明的变量<br>浏览器中，window对象的属性<br>局部作用域又被称为函数作用域（Function scope），所有的变量和函数只能在作用域内部使用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">var foo = 1;</div><div class="line">window.bar = 2;</div><div class="line"></div><div class="line">function baz()&#123;</div><div class="line">    a = 3;</div><div class="line">    var b = 4;</div><div class="line">&#125;</div><div class="line">// Global scope: foo, bar, baz, a </div><div class="line">// Local scope: b</div></pre></td></tr></table></figure>
+<p>作用域链</p>
+<p>通过前面一篇文章了解到，每一个Execution Context中都有一个VO，用来存放变量，函数和参数等信息。</p>
+<p>在JavaScript代码运行中，所有用到的变量都需要去当前AO/VO中查找，当找不到的时候，就会继续查找上层Execution Context中的AO/VO。这样一级级向上查找的过程，就是所有Execution Context中的AO/VO组成了一个作用域链。</p>
+<p>所以说，作用域链与一个执行上下文相关，是内部上下文所有变量对象（包括父变量对象）的列表，用于变量查询。</p>
+<p>Scope = VO/AO + All Parent VO/AOs<br>看一个例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">var x = 10;</div><div class="line"></div><div class="line">function foo() &#123;</div><div class="line">    var y = 20;</div><div class="line">    </div><div class="line">    function bar() &#123;</div><div class="line">        var z = 30;</div><div class="line">       </div><div class="line">        console.log(x + y + z);</div><div class="line">    &#125;;</div><div class="line">    </div><div class="line">    bar()</div><div class="line">&#125;;</div><div class="line"></div><div class="line">foo();</div></pre></td></tr></table></figure>
+<p>上面代码的输出结果为”60”，函数bar可以直接访问”z”，然后通过作用域链访问上层的”x”和”y”。<br><img src="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202341552-94941711.png" alt="img"></p>
+<p>绿色箭头指向VO/AO<br>蓝色箭头指向scope chain（VO/AO + All Parent VO/AOs）<br>再看一个比较典型的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">var data = [];</div><div class="line">for(var i = 0 ; i &lt; 3; i++)&#123;</div><div class="line">    data[i]=function() &#123;</div><div class="line">        console.log(i);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">data[0]();// 3</div><div class="line">data[1]();// 3</div><div class="line">data[2]();// 3</div></pre></td></tr></table></figure>
+<p>第一感觉（错觉）这段代码会输出”0，1，2”。但是根据前面的介绍，变量”i”是存放在”Global VO”中的变量，循环结束后”i”的值就被设置为3，所以代码最后的三次函数调用访问的是相同的”Global VO”中已经被更新的”i”。</p>
+<p>结合作用域链看闭包</p>
+<p>在JavaScript中，闭包跟作用域链有紧密的关系。相信大家对下面的闭包例子一定非常熟悉，代码中通过闭包实现了一个简单的计数器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">function counter() &#123;</div><div class="line">    var x = 0;</div><div class="line">    </div><div class="line">    return &#123;</div><div class="line">        increase: function increase() &#123; return ++x; &#125;,</div><div class="line">        decrease: function decrease() &#123; return --x; &#125;</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line"></div><div class="line">var ctor = counter();</div><div class="line"></div><div class="line">console.log(ctor.increase());</div><div class="line">console.log(ctor.decrease());</div></pre></td></tr></table></figure>
+<p>下面我们就通过Execution Context和scope chain来看看在上面闭包代码执行中到底做了哪些事情。</p>
+<ol>
+<li>当代码进入Global Context后，会创建Global VO<br><img src="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202343192-1736899039.png" alt="img"></li>
+</ol>
+<p>绿色箭头指向VO/AO<br>蓝色箭头指向scope chain（VO/AO + All Parent VO/AOs）</p>
+<ol>
+<li>当代码执行到”var cter = counter();”语句的时候，进入counter Execution Context；根据上一篇文章的介绍，这里会创建counter AO，并设置counter Execution Context的scope chain<br><img src="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202345224-1059314508.png" alt="img"></li>
+</ol>
+<ol>
+<li>当counter函数执行的最后，并退出的时候，Global VO中的ctor就会被设置；这里需要注意的是，虽然counter Execution Context退出了执行上下文栈，但是因为ctor中的成员仍然引用counter AO（因为counter AO是increase和decrease函数的parent scope），所以counter AO依然在Scope中。<br><img src="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202347208-254025968.png" alt="img"></li>
+</ol>
+<ol>
+<li>当执行”ctor.increase()”代码的时候，代码将进入ctor.increase Execution Context，并为该执行上下文创建VO/AO，scope chain和设置this；这时，ctor.increase AO将指向counter AO。<br><img src="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202349224-1554337822.png" alt="img"></li>
+</ol>
+<p>绿色箭头指向VO/AO<br>蓝色箭头指向scope chain（VO/AO + All Parent VO/AOs）<br>红色箭头指向this<br>黑色箭头指向parent VO/AO<br>相信看到这些，一定会对JavaScript闭包有了比较清晰的认识，也了解为什么counter Execution Context退出了执行上下文栈，但是counter AO没有销毁，可以继续访问。</p>
+<p>二维作用域链查找</p>
+<p>通过上面了解到，作用域链（scope chain）的主要作用就是用来进行变量查找。但是，在JavaScript中还有原型链（prototype chain）的概念。</p>
+<p>由于作用域链和原型链的相互作用，这样就形成了一个二维的查找。</p>
+<p>对于这个二维查找可以总结为：当代码需要查找一个属性（property）或者描述符（identifier）的时候，首先会通过作用域链（scope chain）来查找相关的对象；一旦对象被找到，就会根据对象的原型链（prototype chain）来查找属性（property）。</p>
+<p>下面通过一个例子来看看这个二维查找：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">var foo = &#123;&#125;</div><div class="line"></div><div class="line">function baz() &#123;</div><div class="line"></div><div class="line">    Object.prototype.a = &apos;Set foo.a from prototype&apos;;</div><div class="line"></div><div class="line">    return function inner() &#123;</div><div class="line">        console.log(foo.a);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">baz()(); </div><div class="line">// Set bar.a from prototype</div></pre></td></tr></table></figure>
+<p>对于这个例子，可以通过下图进行解释，代码首先通过作用域链（scope chain）查找”foo”，最终在Global context中找到；然后因为”foo”中没有找到属性”a”，将继续沿着原型链（prototype chain）查找属性”a”。<br><img src="http://images2015.cnblogs.com/blog/593627/201510/593627-20151025202351395-1888858218.png" alt="img"></p>
+<p>蓝色箭头表示作用域链查找<br>橘色箭头表示原型链查找<br>总结</p>
+<p>本文介绍了JavaScript中的作用域以及作用域链，通过作用域链分析了闭包的执行过程，进一步认识了JavaScript的闭包。</p>
+<p>同时，结合原型链，演示了JavaScript中的描述符和属性的查找。</p>
+<p>下一篇我们就看看Execution Context中的this属性。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/javascript/" rel="tag">#javascript</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/16/js作用域链之execution-context/" rel="next" title="js作用域链之execution context">
+                <i class="fa fa-chevron-left"></i> js作用域链之execution context
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/16/js作用域链之this/" rel="prev" title="js作用域链之this">
+                js作用域链之this <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Darsy Cheuk" />
+          <p class="site-author-name" itemprop="name">Darsy Cheuk</p>
+          <p class="site-description motion-element" itemprop="description">about life thought, technics, or young</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">posts</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">This post does not have a Table of Contents</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Darsy Cheuk</span>
+</div>
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

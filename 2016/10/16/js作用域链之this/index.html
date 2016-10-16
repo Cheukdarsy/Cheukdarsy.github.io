@@ -1,0 +1,622 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="javascript this," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="JavaScript中的this
+前面两篇文章介绍了JavaScript执行上下文中两个重要属性：VO/AO和scope chain。本文就来看看执行上下文中的this。
+首先看看下面两个对this的概括：
+this是执行上下文（Execution Context）的一个重要属性，是一个与执行上下文相关的特殊对象。因此，它可以叫作上下文对象（也就是用来指明执行上下文是在哪个上下文中被触发的对象）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="js作用域链之this">
+<meta property="og:url" content="https://cheukdarsy.github.io/2016/10/16/js作用域链之this/index.html">
+<meta property="og:site_name" content="Das'Blog">
+<meta property="og:description" content="JavaScript中的this
+前面两篇文章介绍了JavaScript执行上下文中两个重要属性：VO/AO和scope chain。本文就来看看执行上下文中的this。
+首先看看下面两个对this的概括：
+this是执行上下文（Execution Context）的一个重要属性，是一个与执行上下文相关的特殊对象。因此，它可以叫作上下文对象（也就是用来指明执行上下文是在哪个上下文中被触发的对象）。">
+<meta property="og:updated_time" content="2016-10-16T15:05:55.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="js作用域链之this">
+<meta name="twitter:description" content="JavaScript中的this
+前面两篇文章介绍了JavaScript执行上下文中两个重要属性：VO/AO和scope chain。本文就来看看执行上下文中的this。
+首先看看下面两个对this的概括：
+this是执行上下文（Execution Context）的一个重要属性，是一个与执行上下文相关的特殊对象。因此，它可以叫作上下文对象（也就是用来指明执行上下文是在哪个上下文中被触发的对象）。">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: 'Author'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="https://cheukdarsy.github.io/2016/10/16/js作用域链之this/"/>
+
+  <title> js作用域链之this | Das'Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Das'Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">前途满希望 _</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                js作用域链之this
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-10-16T23:05:21+08:00" content="2016-10-16">
+              2016-10-16
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>JavaScript中的this</p>
+<p>前面两篇文章介绍了JavaScript执行上下文中两个重要属性：VO/AO和scope chain。本文就来看看执行上下文中的this。</p>
+<p>首先看看下面两个对this的概括：</p>
+<p>this是执行上下文（Execution Context）的一个重要属性，是一个与执行上下文相关的特殊对象。因此，它可以叫作上下文对象（也就是用来指明执行上下文是在哪个上下文中被触发的对象）。<br>this不是变量对象（Variable Object）的一个属性，所以跟变量不同，this从不会参与到标识符解析过程。也就是说，在代码中当访问this的时候，它的值是直接从执行上下文中获取的，并不需要任何作用域链查找。this的值只在进入上下文的时候进行一次确定。<br>关于this最困惑的应该是，同一个函数，当在不同的上下文进行调用的时候，this的值就可能会不同。也就是说，this的值是通过函数调用表达式（也就是函数被调用的方式）的caller所提供的。</p>
+<p>下面就看看在不同场景中，this的值。</p>
+<p>全局上下文</p>
+<p>在全局上下文（Global Context）中，this总是global object，在浏览器中就是window对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">console.log(this === window);</div><div class="line"></div><div class="line">this.name = &quot;Will&quot;;</div><div class="line">this.age = 28;</div><div class="line">this.getInfo = function()&#123;</div><div class="line">    console.log(this.name + &quot; is &quot; + this.age + &quot; years old&quot;);</div><div class="line">&#125;;</div><div class="line">window.getInfo();</div><div class="line">// true</div><div class="line">// Will is 28 years old</div></pre></td></tr></table></figure>
+<p>函数上下文</p>
+<p>在一个函数中，this的情况就比较多了，this的值直接受函数调用方式的影响。</p>
+<p>Invoke function as Function</p>
+<p>当通过正常的方式调用一个函数的时候，this的值就会被设置为global object（浏览器中的window对象）。</p>
+<p>但是，当使用”strict mode”执行下面代码的时候，this就会被设置为”undefined”。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">function gFunc()&#123;</div><div class="line">    return this;</div><div class="line">&#125;</div><div class="line"></div><div class="line">console.log(gFunc());</div><div class="line">console.log(this === window.gFunc());</div><div class="line">// window</div><div class="line">// true</div></pre></td></tr></table></figure>
+<p>Invoke function as Method</p>
+<p>当函数作为一个对象方法来执行的时候，this的值就是该方法所属的对象。</p>
+<p>在下面的例子中，创建了一个obj对象，并设置name属性的值为”obj”。所以但调用该对象的func方法的时候，方法中的this就表示obj这个对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">var obj = &#123;</div><div class="line">    name: &quot;obj&quot;,</div><div class="line">    func: function () &#123;</div><div class="line">        console.log(this + &quot;:&quot; + this.name);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">obj.func();</div><div class="line">// [object Object]:obj</div></pre></td></tr></table></figure>
+<p>为了验证”方法中的this代表方法所属的对象”这句话，再看下面一个例子。</p>
+<p>在对象obj中，创建了一个内嵌对象nestedObj，当调用内嵌对象的方法的时候，方法中的this就代表nestedObj。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">var obj = &#123;</div><div class="line">    name: &quot;obj&quot;,</div><div class="line">    nestedObj: &#123;</div><div class="line">        name:&quot;nestedObj&quot;,</div><div class="line">        func: function () &#123;</div><div class="line">            console.log(this + &quot;:&quot; + this.name);</div><div class="line">        &#125;</div><div class="line">    &#125;            </div><div class="line">&#125;</div><div class="line"></div><div class="line">obj.nestedObj.func();</div><div class="line">// [object Object]:nestedObj</div></pre></td></tr></table></figure>
+<p>对于上面例子中的方法，通常称为绑定方法，也就是说这些方法都是个特定的对象关联的。</p>
+<p>但是，当我们进行下面操作的时候，temp将是一个全局作用里面的函数，并没有绑定到obj对象上。所以，temp中的this表示的是window对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">var name = &quot;Will&quot;;</div><div class="line">var obj = &#123;</div><div class="line">    name: &quot;obj&quot;,</div><div class="line">    func: function () &#123;</div><div class="line">        console.log(this + &quot;:&quot; + this.name);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">temp = obj.func;</div><div class="line">temp();</div><div class="line">//  [object Window]:Will</div></pre></td></tr></table></figure>
+<p>Invoke function as Constructor</p>
+<p>在JavaScript中，函数可以作为构造器来直接创建对象，在这种情况下，this就代表了新建的对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">function Staff(name, age)&#123;</div><div class="line">    this.name = name;</div><div class="line">    this.age = age;</div><div class="line">    this.getInfo = function()&#123;</div><div class="line">        console.log(this.name + &quot; is &quot; + this.age + &quot; years old&quot;);</div><div class="line">    &#125;;</div><div class="line">&#125;</div><div class="line"></div><div class="line">var will = new Staff(&quot;Will&quot;, 28);</div><div class="line">will.getInfo();</div><div class="line">// Will is 28 years old</div></pre></td></tr></table></figure>
+<p>Invoke context-less function</p>
+<p>对于有些没有上下文的函数，也就是说这些函数没有绑定到特定的对象上，那么这些上下文无关的函数将会被默认的绑定到global object上。</p>
+<p>在这个例子中，函数f和匿名函数表达式在被调用的过程中并没有被关联到任何对象，所以他们的this都代表global object。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">var context = &quot;global&quot;;</div><div class="line"></div><div class="line">var obj = &#123;  </div><div class="line">    context: &quot;object&quot;,</div><div class="line">    method: function () &#123;  </div><div class="line">        console.log(this + &quot;:&quot; +this.context);</div><div class="line">        </div><div class="line">        function f() &#123;</div><div class="line">            var context = &quot;function&quot;;</div><div class="line">            console.log(this + &quot;:&quot; +this.context); </div><div class="line">        &#125;;</div><div class="line">        f(); </div><div class="line">        </div><div class="line">        (function()&#123;</div><div class="line">            var context = &quot;function&quot;;</div><div class="line">            console.log(this + &quot;:&quot; +this.context); </div><div class="line">        &#125;)();</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line"></div><div class="line">obj.method();</div><div class="line">// [object Object]:object</div><div class="line">// [object Window]:global</div><div class="line">// [object Window]:global</div></pre></td></tr></table></figure>
+<p>call/apply/bind改变this</p>
+<p>this本身是不可变的，但是 JavaScript中提供了call/apply/bind三个函数来在函数调用时设置this的值。</p>
+<p>这三个函数的原型如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">fun.apply(obj1 [, argsArray])</div><div class="line"></div><div class="line">Sets obj1 as the value of this inside fun() and calls fun() passing elements of argsArray as its arguments.</div><div class="line">fun.call(obj1 [, arg1 [, arg2 [,arg3 [, ...]]]])</div><div class="line"></div><div class="line">Sets obj1 as the value of this inside fun() and calls fun() passing arg1, arg2, arg3, ... as its arguments.</div><div class="line">fun.bind(obj1 [, arg1 [, arg2 [,arg3 [, ...]]]])</div><div class="line"></div><div class="line">Returns the reference to the function fun with this inside fun() bound to obj1 and parameters of fun bound to the parameters specified arg1, arg2, arg3, ....</div><div class="line">下面看一个简单的例子：</div><div class="line"></div><div class="line">function add(numA, numB)&#123;</div><div class="line">    console.log( this.original + numA + numB);</div><div class="line">&#125;</div><div class="line"></div><div class="line">add(1, 2);</div><div class="line"></div><div class="line">var obj = &#123;original: 10&#125;;</div><div class="line">add.apply(obj, [1, 2]);</div><div class="line">add.call(obj, 1, 2);</div><div class="line"></div><div class="line">var f1 = add.bind(obj);</div><div class="line">f1(2, 3);</div><div class="line"></div><div class="line">var f2 = add.bind(obj, 2);</div><div class="line">f2(3);</div><div class="line">// NaN</div><div class="line">// 13</div><div class="line">// 13</div><div class="line">// 15</div><div class="line">// 15</div></pre></td></tr></table></figure>
+<p>当直接调用add函数的时候，this将代表window，当执行”this.original”的时候，由于window对象并没有”original”属性，所以会得到”undefined”。</p>
+<p>通过call/apply/bind，达到的效果就是把add函数绑定到了obj对象上，当调用add的时候，this就代表了obj这个对象。</p>
+<p>DOM event handler</p>
+<p>当一个函数被当作event handler的时候，this会被设置为触发事件的页面元素（element）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">var body = document.getElementsByTagName(&quot;body&quot;)[0];</div><div class="line">body.addEventListener(&quot;click&quot;, function()&#123;</div><div class="line">    console.log(this);</div><div class="line">&#125;);</div><div class="line">// &lt;body&gt;…&lt;/body&gt;</div></pre></td></tr></table></figure>
+<p>In-line event handler</p>
+<p>当代码通过in-line handler执行的时候，this同样指向拥有该handler的页面元素。</p>
+<p>看下面的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">document.write(&apos;&lt;button onclick=&quot;console.log(this)&quot;&gt;Show this&lt;/button&gt;&apos;);</div><div class="line">// &lt;button onclick=&quot;console.log(this)&quot;&gt;Show this&lt;/button&gt;</div><div class="line">document.write(&apos;&lt;button onclick=&quot;(function()&#123;console.log(this);&#125;)()&quot;&gt;Show this&lt;/button&gt;&apos;);</div><div class="line">// window</div></pre></td></tr></table></figure>
+<p>在第一行代码中，正如上面in-line handler所描述的，this将指向”button”这个element。但是，对于第二行代码中的匿名函数，是一个上下文无关（context-less）的函数，所以this会被默认的设置为window。</p>
+<p>前面我们已经介绍过了bind函数，所以，通过下面的修改就能改变上面例子中第二行代码的行为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">document.write(&apos;&lt;button onclick=&quot;((function()&#123;console.log(this);&#125;).bind(this))()&quot;&gt;Show this&lt;/button&gt;&apos;);</div><div class="line">// &lt;button onclick=&quot;((function()&#123;console.log(this);&#125;).bind(this))()&quot;&gt;Show this&lt;/button&gt;</div></pre></td></tr></table></figure>
+<p>保存this</p>
+<p>在JavaScript代码中，同一个上下文中可能会出现多个this，为了使用外层的this，就需要对this进行暂存了。</p>
+<p>看下面的例子，根据前面的介绍，在body元素的click handler中，this肯定是指向body这个元素，所以为了使用”greeting”这个方法，就是要对指向bar对象的this进行暂存，这里用了一个self变量。</p>
+<p>有了self，我们就可以在click handler中使用bar对象的”greeting”方法了。</p>
+<p>当阅读一些JavaScript库代码的时候，如果遇到类似self，me，that的时候，他们可能就是对this的暂存。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">var bar = &#123;</div><div class="line">    name: &quot;bar&quot;,</div><div class="line">    body: document.getElementsByTagName(&quot;body&quot;)[0],</div><div class="line">    </div><div class="line">    greeting: function()&#123;</div><div class="line">        console.log(&quot;Hi there, I&apos;m &quot; + this + &quot;:&quot; + this.name);</div><div class="line">    &#125;,</div><div class="line">    </div><div class="line">    anotherMethod: function () &#123;</div><div class="line">        var self = this;</div><div class="line">        this.body.addEventListener(&quot;click&quot;, function()&#123;</div><div class="line">            self.greeting();</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">  </div><div class="line">bar.anotherMethod();</div><div class="line">// Hi there, I&apos;m [object Object]:bar</div></pre></td></tr></table></figure>
+<p>同样，对于上面的例子，也可以使用bind来设置this达到相同的效果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">var bar = &#123;</div><div class="line">    name: &quot;bar&quot;,</div><div class="line">    body: document.getElementsByTagName(&quot;body&quot;)[0],</div><div class="line">    </div><div class="line">    greeting: function()&#123;</div><div class="line">        console.log(&quot;Hi there, I&apos;m &quot; + this + &quot;:&quot; + this.name);</div><div class="line">    &#125;,</div><div class="line">    </div><div class="line">    anotherMethod: function () &#123;</div><div class="line">        this.body.addEventListener(&quot;click&quot;, (function()&#123;</div><div class="line">            this.greeting();</div><div class="line">        &#125;).bind(this));</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">  </div><div class="line">bar.anotherMethod();</div><div class="line">// Hi there, I&apos;m [object Object]:bar</div></pre></td></tr></table></figure>
+<p>总结</p>
+<p>本文介绍了执行上下文中的this属性，this的值直接影响着代码的运行结果。</p>
+<p>在函数调用中，this是由激活上下文代码的调用者（caller）来提供的，即调用函数的父上下文(parent context )，也就是说this取决于调用函数的方式，指向调用时所在函数所绑定的对象。</p>
+<p>通过上面的介绍，相信对this有了一定的认识。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/javascript-this/" rel="tag">#javascript this</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/16/js作用域链之scope-chain/" rel="next" title="js作用域链之scope chain">
+                <i class="fa fa-chevron-left"></i> js作用域链之scope chain
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Darsy Cheuk" />
+          <p class="site-author-name" itemprop="name">Darsy Cheuk</p>
+          <p class="site-description motion-element" itemprop="description">about life thought, technics, or young</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">posts</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">This post does not have a Table of Contents</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Darsy Cheuk</span>
+</div>
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
