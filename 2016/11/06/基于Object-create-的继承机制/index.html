@@ -1,0 +1,578 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Object.create() js继承," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="今天无意中看到了javascript的继承机制，除了es5之前的new方法实现类继承之外，在es5后有了一种新的对象创建方式，Object.create(),通过此方法可以更加容易实现javascript的继承，尽管es6中推出了class的语法糖，但是还是有必要学习一下Object.create()。
+###1.Object.create()是什么Object.create(proto[, pr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Object.create()的继承机制">
+<meta property="og:url" content="https://cheukdarsy.github.io/2016/11/06/基于Object-create-的继承机制/index.html">
+<meta property="og:site_name" content="Das'Blog">
+<meta property="og:description" content="今天无意中看到了javascript的继承机制，除了es5之前的new方法实现类继承之外，在es5后有了一种新的对象创建方式，Object.create(),通过此方法可以更加容易实现javascript的继承，尽管es6中推出了class的语法糖，但是还是有必要学习一下Object.create()。
+###1.Object.create()是什么Object.create(proto[, pr">
+<meta property="og:updated_time" content="2016-11-06T04:52:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基于Object.create()的继承机制">
+<meta name="twitter:description" content="今天无意中看到了javascript的继承机制，除了es5之前的new方法实现类继承之外，在es5后有了一种新的对象创建方式，Object.create(),通过此方法可以更加容易实现javascript的继承，尽管es6中推出了class的语法糖，但是还是有必要学习一下Object.create()。
+###1.Object.create()是什么Object.create(proto[, pr">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: 'Author'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="https://cheukdarsy.github.io/2016/11/06/基于Object-create-的继承机制/"/>
+
+  <title> 基于Object.create()的继承机制 | Das'Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Das'Blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle">前途满希望 _</p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                基于Object.create()的继承机制
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">Posted on</span>
+            <time itemprop="dateCreated" datetime="2016-11-06T12:50:17+08:00" content="2016-11-06">
+              2016-11-06
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>今天无意中看到了javascript的继承机制，除了es5之前的new方法实现类继承之外，在es5后有了一种新的对象创建方式，Object.create(),通过此方法可以更加容易实现javascript的继承，尽管es6中推出了class的语法糖，但是还是有必要学习一下Object.create()。</p>
+<p>###1.Object.create()是什么<br>Object.create(proto[, propertiesObject])是E5中提出的一种新的对象创建方式，第一个参数是要继承的原型，如果不是一个子函数，可以传一个null，第二个参数是对象的属性描述符，这个参数是可选的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">function Car (desc) &#123;</div><div class="line">    this.desc = desc;</div><div class="line">    this.color = &quot;red&quot;;</div><div class="line">&#125;</div><div class="line"> </div><div class="line">Car.prototype = &#123;</div><div class="line">    getInfo: function() &#123;</div><div class="line">      return &apos;A &apos; + this.color + &apos; &apos; + this.desc + &apos;.&apos;;</div><div class="line">    &#125;</div><div class="line">&#125;;</div><div class="line">//instantiate object using the constructor function</div><div class="line">var car =  Object.create(Car.prototype);</div><div class="line">car.color = &quot;blue&quot;;</div><div class="line">alert(car.getInfo());</div></pre></td></tr></table></figure>
+<p>###2.propertiesObject 参数的详细解释：（默认都为false）</p>
+<p>####数据属性</p>
+<ul>
+<li>writable:是否可任意写</li>
+<li>configurable:是否能够删除，是否能够被修改</li>
+<li>enumerable:是否能用for in 枚举</li>
+<li>value: 值</li>
+</ul>
+<p>####访问属性:</p>
+<ul>
+<li>get():访问</li>
+<li>set():设置</li>
+</ul>
+<p>###3.例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;html&gt;</div><div class="line">&lt;head&gt;</div><div class="line">    &lt;title&gt;yupeng&apos;s document &lt;/title&gt;</div><div class="line">    &lt;meta charset=&quot;utf-8&quot;/&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">    &lt;script type=&quot;text/javascript&quot;&gt;</div><div class="line"></div><div class="line">        var obj = &#123;</div><div class="line"></div><div class="line">            a:function()&#123;</div><div class="line">                console.log(100)</div><div class="line">            &#125;,</div><div class="line">            b:function()&#123;</div><div class="line">                console.log(200)</div><div class="line">            &#125;,</div><div class="line">            c:function()&#123;</div><div class="line">                console.log(300)</div><div class="line">            &#125;</div><div class="line"></div><div class="line">        &#125;</div><div class="line"></div><div class="line">        var newObj = &#123;&#125;;</div><div class="line"></div><div class="line">        newObj = Object.create(obj,&#123;</div><div class="line">            t1:&#123;</div><div class="line">                value:&apos;yupeng&apos;,</div><div class="line">                writable:true</div><div class="line">            &#125;,</div><div class="line">            bar: &#123;</div><div class="line">                configurable: false,</div><div class="line">                get: function() &#123; return bar; &#125;,</div><div class="line">                set: function(value) &#123; bar=value &#125;</div><div class="line">            &#125;</div><div class="line">            </div><div class="line">        &#125;)</div><div class="line"></div><div class="line">        console.log(newObj.a());</div><div class="line">        console.log(newObj.t1);</div><div class="line">        newObj.t1=&apos;yupeng1&apos;</div><div class="line">        console.log(newObj.t1);</div><div class="line">        newObj.bar=201;</div><div class="line">        console.log(newObj.bar)</div><div class="line">        </div><div class="line">        function Parent() &#123; &#125;</div><div class="line">        var parent = new Parent();</div><div class="line">        var child = Object.create(parent, &#123;</div><div class="line">              dataDescriptor: &#123;</div><div class="line">                value: &quot;This property uses this string as its value.&quot;,</div><div class="line">                writable: true,</div><div class="line">                enumerable: true</div><div class="line">              &#125;,</div><div class="line">              accessorDescriptor: &#123;</div><div class="line">                get: function () &#123; return &quot;I am returning: &quot; + accessorDescriptor; &#125;,</div><div class="line">                set: function (val) &#123; accessorDescriptor = val; &#125;,</div><div class="line">                configurable: true</div><div class="line">              &#125;</div><div class="line">            &#125;);</div><div class="line"></div><div class="line">        child.accessorDescriptor = &apos;YUPENG&apos;;</div><div class="line">        console.log(child.accessorDescriptor);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">        var Car2 = function()&#123;</div><div class="line">            this.name = &apos;aaaaaa&apos;</div><div class="line">        &#125; //this is an empty object, like &#123;&#125;</div><div class="line">        Car2.prototype = &#123;</div><div class="line">          getInfo: function() &#123;</div><div class="line">            return &apos;A &apos; + this.color + &apos; &apos; + this.desc + &apos;.&apos;;</div><div class="line">          &#125;</div><div class="line">        &#125;;</div><div class="line"></div><div class="line">        var newCar = new Car2();</div><div class="line">         </div><div class="line">        var car2 = Object.create(newCar, &#123;</div><div class="line">          //value properties</div><div class="line">          color:   &#123; writable: true,  configurable:true, value: &apos;red&apos; &#125;,</div><div class="line">          //concrete desc value</div><div class="line">          rawDesc: &#123; writable: true, configurable:true, value: &apos;Porsche boxter&apos; &#125;,</div><div class="line">          // data properties (assigned using getters and setters)</div><div class="line">          desc: &#123; </div><div class="line">            configurable:true, </div><div class="line">            get: function ()      &#123; return this.rawDesc.toUpperCase();  &#125;,</div><div class="line">            set: function (value) &#123; this.rawDesc = value.toLowerCase(); &#125;  </div><div class="line">          &#125;</div><div class="line">        &#125;); </div><div class="line">        car2.color = &apos;blue&apos;;</div><div class="line">        console.log(car2.getInfo());</div><div class="line">        car2.desc = &quot;XXXXXXXX&quot;;</div><div class="line">        console.log(car2.getInfo());</div><div class="line">        console.log(car2.name);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    &lt;/script&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<p>结果为：</p>
+<p>100<br><br>yupeng<br><br>yupeng1<br><br>201<br><br>I am returning: YUPENG <br><br>A blue PORSCHE BOXTER. <br><br>A blue XXXXXXXX. <br><br>aaaaaa</p>
+<p>参考资料:<br><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Introduction_to_Object-Oriented_JavaScript" target="_blank" rel="external">MDN 面向对象简介</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Object-create-js继承/" rel="tag">#Object.create() js继承</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/10/16/js作用域链之this/" rel="next" title="js作用域链之this">
+                <i class="fa fa-chevron-left"></i> js作用域链之this
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Darsy Cheuk" />
+          <p class="site-author-name" itemprop="name">Darsy Cheuk</p>
+          <p class="site-description motion-element" itemprop="description">about life thought, technics, or young</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">posts</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">This post does not have a Table of Contents</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Darsy Cheuk</span>
+</div>
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
